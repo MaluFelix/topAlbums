@@ -9,4 +9,8 @@ export const useStyles = makeStyles((theme) => ({
     media: {
         height: 200,
     },
+    button: {
+        display:'flex',
+        justifyContent:'space-between',
+    },
 }));

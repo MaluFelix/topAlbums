@@ -47,11 +47,11 @@ export default function AlbumCard(props: AlbumCardProps): JSX.Element {
                     </Typography>
                 </CardContent>
             </CardActionArea>
-            <CardActions>
+            <CardActions className={classes.button}>
                 <IconButton aria-label="add to favorites">
                     <FavoriteIcon />
                 </IconButton>
-                <Button size="small" color="primary">
+                <Button target="_blank" href={props.album.link} color="primary">
                     iTunes
                 </Button>
             </CardActions>
