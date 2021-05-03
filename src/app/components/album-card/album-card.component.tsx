@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Material UI
 import {
@@ -14,6 +14,9 @@ import {
 import FavoriteIcon from '@material-ui/icons/Favorite';
 // Model
 import { Album } from '../../models/album.model';
+// Storage
+import Storage from '../../shared/services/web-storage.service';
+import { STORAGE_KEY } from '../../shared/constants/storage.constants';
 // Style
 import { useStyles } from './album-card.component.style';
 
@@ -23,6 +26,44 @@ interface AlbumCardProps {
 
 export default function AlbumCard(props: AlbumCardProps): JSX.Element {
     const classes = useStyles();
+
+    // Consts
+    const getArray = JSON.parse(localStorage.getItem(STORAGE_KEY.FAVORITES) || '0') ;
+    // State
+    const [favorites, setFavorites] = useState<number[]>([]);
+
+    const addfavorite = (album: Album) => {
+        const favArray = favorites;
+        let addFavArray = true;
+
+        favArray.map((item: number) => {
+            if (item === album.rank) {
+                favArray.splice(item, 1);
+                addFavArray = false;
+            }
+        });
+
+        if (addFavArray) {
+            favArray.push(album.rank);
+        }
+
+        setFavorites([...favArray]);
+
+        Storage.local.set(STORAGE_KEY.FAVORITES, JSON.stringify(favorites));
+
+        const storage = Storage.local.get(STORAGE_KEY.FAVITEM + (album.rank));
+        if (storage === null) {
+            Storage.local.set((STORAGE_KEY.FAVITEM + (album.rank)), JSON.stringify(album));
+        } else {
+            Storage.local.remove(STORAGE_KEY.FAVITEM + (album.rank));
+        }
+    };
+
+    useEffect(() => {
+        if (getArray !== 0) {
+            setFavorites([...getArray]);
+        }
+    }, []);
 
     return (
         <Card className={classes.root}>
@@ -48,8 +89,10 @@ export default function AlbumCard(props: AlbumCardProps): JSX.Element {
                 </CardContent>
             </CardActionArea>
             <CardActions className={classes.button}>
-                <IconButton aria-label="add to favorites">
-                    <FavoriteIcon />
+                <IconButton aria-label="add to favorites" onClick={() => addfavorite(props.album)}>
+                    {
+                        Storage.local.get(STORAGE_KEY.FAVITEM+(props.album.rank)) ? <FavoriteIcon style={{ color: 'red'}}/> : <FavoriteIcon />
+                    }
                 </IconButton>
                 <Button target="_blank" href={props.album.link} color="primary">
                     iTunes

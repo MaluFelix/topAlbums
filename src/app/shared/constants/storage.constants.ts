@@ -1,3 +1,5 @@
 export enum STORAGE_KEY {
-    THEME = 'theme'
+    THEME = 'theme',
+    FAVORITES = 'favorites',
+    FAVITEM = 'favItem',
 }
